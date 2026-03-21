@@ -1,7 +1,7 @@
 version: 2
 
 # Simplified goreleaser config for fork builds
-# Only builds binaries and creates GitHub Release (no Docker/Homebrew/Scoop/AUR/NPM)
+# Publishes: GitHub Release, GHCR Docker image, Homebrew tap
 
 before:
   hooks:
@@ -83,3 +83,43 @@ docker_manifests:
     image_templates:
       - "ghcr.io/{{ .Env.DOCKER_REPO_OWNER }}/infisical-cli:latest-amd64"
       - "ghcr.io/{{ .Env.DOCKER_REPO_OWNER }}/infisical-cli:latest-arm64"
+
+brews:
+  # latest formula — `brew install YewFence/infisical-cli/infisical`
+  - name: infisical
+    skip_upload: "{{ if .IsSnapshot }}true{{ else }}false{{ end }}"
+    repository:
+      owner: "{{ .Env.HOMEBREW_TAP_OWNER }}"
+      name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+    commit_author:
+      name: "YewFence"
+      email: noreply@github.com
+    directory: Formula
+    homepage: "https://github.com/YewFence/infisical-cli"
+    description: "CLI for the Infisical secret manager (yewfence fix fork)"
+    install: |-
+      bin.install "infisical"
+      bash_completion.install "completions/infisical.bash" => "infisical"
+      zsh_completion.install "completions/infisical.zsh" => "_infisical"
+      fish_completion.install "completions/infisical.fish"
+      man1.install "manpages/infisical.1.gz"
+  # pinned formula — `brew install YewFence/infisical-cli/infisical@0.38.3-yewfix`
+  - name: "infisical@{{ .Version }}"
+    skip_upload: "{{ if .IsSnapshot }}true{{ else }}false{{ end }}"
+    repository:
+      owner: "{{ .Env.HOMEBREW_TAP_OWNER }}"
+      name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+    commit_author:
+      name: "YewFence"
+      email: noreply@github.com
+    directory: Formula
+    homepage: "https://github.com/YewFence/infisical-cli"
+    description: "CLI for the Infisical secret manager (yewfence fix fork)"
+    install: |-
+      bin.install "infisical"
+      bash_completion.install "completions/infisical.bash" => "infisical"
+      zsh_completion.install "completions/infisical.zsh" => "_infisical"
+      fish_completion.install "completions/infisical.fish"
+      man1.install "manpages/infisical.1.gz"
