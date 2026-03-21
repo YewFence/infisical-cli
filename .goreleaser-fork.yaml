@@ -31,7 +31,7 @@ builds:
 archives:
   - format_overrides:
       - goos: windows
-        format: zip
+        formats: [zip]
     files:
       - README*
       - LICENSE*
@@ -46,47 +46,25 @@ checksum:
   name_template: "checksums.txt"
 
 snapshot:
-  name_template: "{{ .Version }}-devel"
+  version_template: "{{ .Version }}-devel"
 
-dockers:
-  - dockerfile: docker/alpine
-    goos: linux
-    goarch: amd64
-    use: buildx
-    ids:
-      - all-builds
-    image_templates:
-      - "ghcr.io/{{ .Env.DOCKER_REPO_OWNER }}/infisical-cli:{{ .Version }}-amd64"
-      - "ghcr.io/{{ .Env.DOCKER_REPO_OWNER }}/infisical-cli:latest-amd64"
-    build_flag_templates:
-      - "--pull"
-      - "--platform=linux/amd64"
-  - dockerfile: docker/alpine
-    goos: linux
-    goarch: arm64
-    use: buildx
-    ids:
-      - all-builds
-    image_templates:
-      - "ghcr.io/{{ .Env.DOCKER_REPO_OWNER }}/infisical-cli:{{ .Version }}-arm64"
-      - "ghcr.io/{{ .Env.DOCKER_REPO_OWNER }}/infisical-cli:latest-arm64"
-    build_flag_templates:
-      - "--pull"
-      - "--platform=linux/arm64"
+dockers_v2:
+  - images:
+      - "ghcr.io/{{ .Env.DOCKER_REPO_OWNER }}/infisical-cli"
+    tags:
+      - "{{ .Version }}"
+      - latest
+    platforms:
+      - linux/amd64
+      - linux/arm64
+    dockerfile: docker/alpine
 
-docker_manifests:
-  - name_template: "ghcr.io/{{ .Env.DOCKER_REPO_OWNER }}/infisical-cli:{{ .Version }}"
-    image_templates:
-      - "ghcr.io/{{ .Env.DOCKER_REPO_OWNER }}/infisical-cli:{{ .Version }}-amd64"
-      - "ghcr.io/{{ .Env.DOCKER_REPO_OWNER }}/infisical-cli:{{ .Version }}-arm64"
-  - name_template: "ghcr.io/{{ .Env.DOCKER_REPO_OWNER }}/infisical-cli:latest"
-    image_templates:
-      - "ghcr.io/{{ .Env.DOCKER_REPO_OWNER }}/infisical-cli:latest-amd64"
-      - "ghcr.io/{{ .Env.DOCKER_REPO_OWNER }}/infisical-cli:latest-arm64"
-
-brews:
-  # latest formula — `brew install YewFence/infisical-cli/infisical`
+homebrew_casks:
+  # `brew install YewFence/infisical-cli/infisical`
+  # `brew install YewFence/infisical-cli/infisical@0.38.3-yewfix`
   - name: infisical
+    alternative_names:
+      - "infisical@{{ .Version }}"
     repository:
       owner: "{{ .Env.HOMEBREW_TAP_OWNER }}"
       name: homebrew-tap
@@ -94,30 +72,14 @@ brews:
     commit_author:
       name: "YewFence"
       email: noreply@github.com
-    directory: Formula
+    directory: Casks
     homepage: "https://github.com/YewFence/infisical-cli"
     description: "Infisical CLI (yewfix fork)"
-    install: |-
-      bin.install "infisical"
-      bash_completion.install "completions/infisical.bash" => "infisical"
-      zsh_completion.install "completions/infisical.zsh" => "_infisical"
-      fish_completion.install "completions/infisical.fish"
-      man1.install "manpages/infisical.1.gz"
-  # pinned formula — `brew install YewFence/infisical-cli/infisical@0.38.3-yewfix`
-  - name: "infisical@{{ .Version }}"
-    repository:
-      owner: "{{ .Env.HOMEBREW_TAP_OWNER }}"
-      name: homebrew-tap
-      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
-    commit_author:
-      name: "YewFence"
-      email: noreply@github.com
-    directory: Formula
-    homepage: "https://github.com/YewFence/infisical-cli"
-    description: "Infisical CLI (yewfix fork)"
-    install: |-
-      bin.install "infisical"
-      bash_completion.install "completions/infisical.bash" => "infisical"
-      zsh_completion.install "completions/infisical.zsh" => "_infisical"
-      fish_completion.install "completions/infisical.fish"
-      man1.install "manpages/infisical.1.gz"
+    binaries:
+      - infisical
+    manpages:
+      - manpages/infisical.1.gz
+    completions:
+      bash: completions/infisical.bash
+      zsh: completions/infisical.zsh
+      fish: completions/infisical.fish
