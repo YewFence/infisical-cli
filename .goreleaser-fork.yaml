@@ -96,7 +96,7 @@ brews:
       email: noreply@github.com
     directory: Formula
     homepage: "https://github.com/YewFence/infisical-cli"
-    description: "The Infisical CLI (yewfix fork)"
+    description: "Infisical CLI (yewfix fork)"
     install: |-
       bin.install "infisical"
       bash_completion.install "completions/infisical.bash" => "infisical"
@@ -114,7 +114,7 @@ brews:
       email: noreply@github.com
     directory: Formula
     homepage: "https://github.com/YewFence/infisical-cli"
-    description: "The Infisical CLI (yewfix fork)"
+    description: "Infisical CLI (yewfix fork)"
     install: |-
       bin.install "infisical"
       bash_completion.install "completions/infisical.bash" => "infisical"
