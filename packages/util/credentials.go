@@ -86,6 +86,7 @@ func GetCurrentLoggedInUserDetails(setConfigVariables bool) (LoggedInUserDetails
 
 		isAuthenticated := !IsJWTExpired(userCreds.JTWToken)
 
+
 		// TODO: add refresh token
 		// if !isAuthenticated {
 		// 	accessTokenResponse, err := api.CallGetNewAccessTokenWithRefreshToken(httpClient, userCreds.RefreshToken)
