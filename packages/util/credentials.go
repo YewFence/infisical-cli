@@ -9,6 +9,7 @@ import (
 	"github.com/Infisical/infisical-merge/packages/api"
 	"github.com/Infisical/infisical-merge/packages/config"
 	"github.com/Infisical/infisical-merge/packages/models"
+	"github.com/rs/zerolog/log"
 	"github.com/zalando/go-keyring"
 )
 
@@ -93,7 +94,10 @@ func GetCurrentLoggedInUserDetails(setConfigVariables bool) (LoggedInUserDetails
 			SetAuthToken(userCreds.JTWToken).
 			SetHeader("Accept", "application/json")
 
-		isAuthenticated := api.CallIsAuthenticated(httpClient)
+		isAuthenticated, authErr := api.CallIsAuthenticated(httpClient)
+		if authErr != nil {
+			log.Debug().Err(authErr).Msg("failed to validate stored login credentials")
+		}
 		// TODO: add refresh token
 		// if !isAuthenticated {
 		// 	accessTokenResponse, err := api.CallGetNewAccessTokenWithRefreshToken(httpClient, userCreds.RefreshToken)
