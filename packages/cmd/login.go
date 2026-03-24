@@ -840,8 +840,11 @@ func askToPasteJwtToken(success chan models.UserCredentials, failure chan error)
 		SetAuthToken(userCredentials.JTWToken).
 		SetHeader("Accept", "application/json")
 
-	isAuthenticated := api.CallIsAuthenticated(httpClient)
+	isAuthenticated, err := api.CallIsAuthenticated(httpClient)
 	if !isAuthenticated {
+		if err == nil {
+			err = fmt.Errorf("authentication check failed with no error details")
+		}
 		util.PrintlnStderr("Invalid user credentials provided", err)
 		failure <- err
 		os.Exit(1)

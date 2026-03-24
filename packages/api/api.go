@@ -360,7 +360,7 @@ func CallGetCertificateProfileBySlug(httpClient *resty.Client, projectId, slug s
 	return profileResponse.CertificateProfile, nil
 }
 
-func CallIsAuthenticated(httpClient *resty.Client) bool {
+func CallIsAuthenticated(httpClient *resty.Client) (bool, error) {
 	var workSpacesResponse GetWorkSpacesResponse
 	response, err := httpClient.
 		R().
@@ -369,15 +369,15 @@ func CallIsAuthenticated(httpClient *resty.Client) bool {
 		Post(fmt.Sprintf("%v/v1/auth/checkAuth", config.INFISICAL_URL))
 
 	if err != nil {
-		return false
+		return false, NewGenericRequestError(operationCallIsAuthenticated, err)
 	}
 
 	if response.IsError() {
 		log.Debug().Msgf("%s: Unsuccessful response: [response=%v]", operationCallIsAuthenticated, response)
-		return false
+		return false, NewAPIErrorWithResponse(operationCallIsAuthenticated, response, nil)
 	}
 
-	return true
+	return true, nil
 }
 
 func CallGetNewAccessTokenWithRefreshToken(httpClient *resty.Client, refreshToken string) (GetNewAccessTokenWithRefreshTokenResponse, error) {
